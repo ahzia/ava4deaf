@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html >
+<!--Ava-->
+<!--by:ah.zia yousufi-->
+<!--the used tamplate From https://codepen.io/frytyler/pen/EGdtg-->
+<head>
+  <meta charset="UTF-8">
+  <title>AVA API</title>
+  <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  
+<style>
+html {
+	box-sizing: border-box;
+	font-size: 1em;
+	overflow-y: scroll;
+  }
+  .ssw-one-d {
+   font-family: SuttonSignWritingOneD;
+  }
+  input.ssw-one-d {
+	height: 60px;
+	font-size: 30px;
+  }
+  textarea {
+	width: 100%;
+	height: 100px;
+  }
+  textarea.ssw-one-d {
+	height: 200px;
+	font-size: 15px;
+  }
+  
+  @font-face {
+	font-family: "SuttonSignWritingLine";
+	src: 
+	  local('SuttonSignWritingLine'),
+	  url('https://cdn.rawgit.com/Slevinski/SuttonSignWriting/master/assets/SuttonSignWritingLine.ttf') format('truetype');
+  }
+  @font-face {
+	font-family: "SuttonSignWritingFill";
+	src: 
+	  local('SuttonSignWritingFill'),
+	  url('https://cdn.rawgit.com/Slevinski/SuttonSignWriting/master/assets/SuttonSignWritingFill.ttf') format('truetype');
+  }
+  @font-face {
+	font-family: "SuttonSignWritingOneD";
+	src: 
+	  local('SuttonSignWritingOneD'),
+	  url('https://cdn.rawgit.com/Slevinski/SuttonSignWriting/master/assets/SuttonSignWritingOneD.ttf') format('truetype');
+  }
+   
+  div.signtext {
+	-webkit-writing-mode: vertical-lr;
+	-moz-writing-mode: vertical-lr;
+	-ms-writing-mode: tb-lr;
+	writing-mode: vertical-lr;
+	font-size: 0%;
+	border-left: 1px solid blue;
+	height: 75%;
+	margin-top: 2%;
+  }
+  
+  span.outside {
+	border-left: 1px solid blue;
+	vertical-align: top;
+  }
+  
+  span.middle {
+	vertical-align: bottom;
+  }
+  
+  span.inside {
+	border-left: 1px dashed red;
+  }
+  
+  div.sign {
+	writing-mode: horizontal-tb;
+	display: inline-block;
+	vertical-align: middle;
+	padding: 20px;
+  }
+  div.sign svg {
+	overflow: visible !important;
+  }
+  
+  
+	#swu {
+	  margin-bottom: 1%;
+	}
+  
+	.form-button {
+	  font-size:120%;
+	  width: 30%;
+    align: top;
+	  display: inline-block;
+	  vertical-align: top;
+	}
+  
+	#swuset{
+	  float: right;
+	}
+  
+	div.signtext.midnight {
+	  background-color: black;
+	}
+	
+	div.signtext.midnight div.sign svg g text.sym-line {
+	  fill: white !important;
+	}
+  
+	div.signtext.midnight div.sign svg g text.sym-fill {
+	  fill: black !important;
+	}
+  
+	div.signtext.midnight {
+	  border-left: 1px solid yellow;
+	}
+  
+	div.signtext.midnight span.outside {
+	  border-left: 1px solid yellow;
+	}
+  
+	div.signtext.midnight span.inside {
+	  border-left: 1px dashed white;
+	}
+  
+  div.sign:hover svg g text {
+	fill: blue !important;
+  }
+  div.signtext.midnight div.sign:hover svg g text {
+	fill: yellow !important;
+  }
+  
+    </style>
+</head>
+
+<body>
+ <div class="login">
+	<h1>First Machine Translator for deaf</h1>
+  <p>using Ava you can translate any English text to American Sign Language an view it in Sign Writing</p>
+     <!-- Main Input For Receiving Query to our ML -->
+    <form action="{{ url_for('predict')}}"method="post">
+    	<input type="text" name="English" placeholder="Enter English text" required="required" />
+        <button type="submit" class="btn btn-primary btn-block btn-large">Translate</button>
+        <textarea disabled style="font-size: 30px" class="ssw-one-d" id="swu" name="text" placeholder="Sign writing in 1D">{{ prediction_text }}</textarea> 
+
+      </form>
+<form action="2D.html" method="GET" >
+  <button type="submit" class="btn btn-primary btn-block btn-large">view in 2D</button>
+  <input  hidden type="text" name="1d" value={{ prediction_text }} />
+            </form>
+</body>
+</html>
