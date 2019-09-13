@@ -795,13 +795,13 @@ def evaluateAndShowAttention(input_sentence):
     showAttention(input_sentence, output_words, attentions)
 
 
-evaluateAndShowAttention("up")
+#evaluateAndShowAttention("up")
 
-evaluateAndShowAttention("¿debate")
+#evaluateAndShowAttention("¿debate")
 
-evaluateAndShowAttention("¿sore")
+#evaluateAndShowAttention("¿sore")
 
-evaluateAndShowAttention("¿wheel")
+#evaluateAndShowAttention("¿wheel")
 
 
 # #saving the encoder and decoder Model
@@ -809,8 +809,8 @@ evaluateAndShowAttention("¿wheel")
 # In[56]:
 
 
-torch.save(encoder1,"encoder1")
-torch.save(attn_decoder1,"decoder")
+#torch.save(encoder1,"encoder1")
+#torch.save(attn_decoder1,"decoder")
 
 # 
 # 
