@@ -812,7 +812,6 @@ evaluateAndShowAttention("¿wheel")
 torch.save(encoder1,"encoder1")
 torch.save(attn_decoder1,"decoder")
 
-
 # 
 # 
 
