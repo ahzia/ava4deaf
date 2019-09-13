@@ -2,12 +2,6 @@
 # coding: utf-8
 
 # In[ ]:
-
-
-get_ipython().run_line_magic('matplotlib', 'inline')
-import pickle
-
-
 # 
 # Translation with a Sequence to Sequence Network and Attention
 # *************************************************************
@@ -34,6 +28,9 @@ import pickle
 
 
 from __future__ import unicode_literals, print_function, division
+
+import pickle
+
 from io import open
 import unicodedata
 import string
@@ -43,7 +40,7 @@ import random
 import torch
 import torch.nn as nn
 from torch import optim
-import torch.nn.functional as F
+
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
