@@ -81,9 +81,9 @@ class EncoderRNN(nn.Module):
     #new code
     #end new code
     def initHidden(self):
-        #return torch.zeros(1, 1, self.hidden_size, device=device)
         return torch.zeros(1, 1, EncoderRNN.hidden_size, device=device)
-        
+        return torch.zeros(1, 1, self.hidden_size, device=device)
+
 
 # class AttnDecoderRNN(nn.Module):
 #     def __init__(self, hidden_size, output_size, dropout_p=0.1, max_length=MAX_LENGTH):
@@ -123,6 +123,7 @@ class EncoderRNN(nn.Module):
 
 
 # Loading the modeles
+encoder=EncoderRNN()
 decoder = CustomUnpickler(open('attn_decoder1', 'rb')).load()
 
 encoder = CustomUnpickler(open('encoder1', 'rb')).load()
@@ -225,8 +226,7 @@ def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
     with torch.no_grad():
         input_tensor = tensorFromSentence(input_lang, sentence)
         input_length = input_tensor.size()[0]
-        encoder_hidden=EncoderRNN.initHidden(encoder)
-        #encoder_hidden = encoder.initHidden()
+        encoder_hidden = encoder.initHidden()
         encoder_outputs = torch.zeros(max_length, encoder.hidden_size, device=device)
 
         for ei in range(input_length):
