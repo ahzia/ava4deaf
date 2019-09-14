@@ -26,7 +26,8 @@ class CustomUnpickler(pickle.Unpickler):
             return DecoderRNN
         return super().find_class(module, name)
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+#device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")
 
 app = Flask(__name__)
 #model = pickle.load(open('model.pkl', 'rb'))
@@ -79,10 +80,6 @@ class EncoderRNN(nn.Module):
         output, hidden = self.gru(output, hidden)
         return output, hidden
     #new code
-    if isinstance(model, DataParallel):
-        self.model_attr_accessor = model.module
-    else:
-        self.model_attr_accessor = model
     #end new code
     def initHidden(self):
         return torch.zeros(1, 1, self.hidden_size, device=device)
