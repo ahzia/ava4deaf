@@ -26,8 +26,7 @@ class CustomUnpickler(pickle.Unpickler):
             return DecoderRNN
         return super().find_class(module, name)
 
-#device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-device = torch.device("cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 app = Flask(__name__)
 #model = pickle.load(open('model.pkl', 'rb'))
@@ -225,8 +224,7 @@ def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
     with torch.no_grad():
         input_tensor = tensorFromSentence(input_lang, sentence)
         input_length = input_tensor.size()[0]
-        encoder_hidden = encoder.initHidden()
-
+        encoder_hidden =getattr(encoder,initHidden())
         encoder_outputs = torch.zeros(max_length, encoder.hidden_size, device=device)
 
         for ei in range(input_length):
