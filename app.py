@@ -1,5 +1,4 @@
 from __future__ import unicode_literals, print_function, division
-#import numpy as np
 from trainig import AttnDecoderRNN
 from trainig import DecoderRNN
 from trainig import EncoderRNN
