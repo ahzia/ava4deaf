@@ -255,7 +255,7 @@ def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
         return decoded_words, decoder_attentions[:di + 1]
 
 def evaluateASA(input_sentence):
-    output_words, attentions = evaluate(encoder, decoder, input_sentence)
+    output_words, attentions = evaluate(encoder.module, decoder, input_sentence)
     return(' '.join(output_words))
 
 
