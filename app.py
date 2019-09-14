@@ -11,8 +11,6 @@ import torch
 import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
-from trainig import AttnDecoderRNN
-from trainig import EncoderRNN
 from trainig import Lang
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -276,6 +274,7 @@ def predict_api():
 def td():
     page = request.args.get('2d', default = "", type = str)
     return render_template('2d.html')   
-
+from trainig import AttnDecoderRNN
+from trainig import EncoderRNN
 if __name__ == "__main__":
     app.run(debug=True)
