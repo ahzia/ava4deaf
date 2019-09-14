@@ -297,4 +297,7 @@ def td():
     return render_template('2d.html')   
 
 if __name__ == "__main__":
+    from trainig import AttnDecoderRNN
+    from trainig import DecoderRNN
+    from trainig import EncoderRNN
     app.run(debug=True)
