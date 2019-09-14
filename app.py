@@ -123,8 +123,10 @@ class EncoderRNN(nn.Module):
 
 #     def initHidden(self):
 #         return torch.zeros(1, 1, self.hidden_size, device=device)
-
-encoder=EncoderRNN
+input_lang, output_lang, pairs = prepareData('eng', 'SignLanguage', True)
+hidden_size = 256
+encoder = EncoderRNN(input_lang.n_words, hidden_size).to(device)
+decoder = AttnDecoderRNN(hidden_size, output_lang.n_words, dropout_p=0.1).to(device)
 # Loading the modeles
 decoder = CustomUnpickler(open('attn_decoder1', 'rb')).load()
 
