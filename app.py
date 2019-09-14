@@ -125,8 +125,8 @@ class AttnDecoderRNN(nn.Module):
         return torch.zeros(1, 1, self.hidden_size, device=device)
 input_lang, output_lang, pairs = trainig.prepareData('eng', 'SignLanguage', True)
 hidden_size = 256
-encoder = EncoderRNN(input_lang.n_words, hidden_size).to(device)
-decoder = AttnDecoderRNN(hidden_size, output_lang.n_words, dropout_p=0.1).to(device)
+encoder1 = EncoderRNN(input_lang.n_words, hidden_size).to(device)
+decoder1 = AttnDecoderRNN(hidden_size, output_lang.n_words, dropout_p=0.1).to(device)
 # Loading the modeles
 decoder = CustomUnpickler(open('attn_decoder1', 'rb')).load()
 
@@ -231,8 +231,8 @@ def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
     with torch.no_grad():
         input_tensor = tensorFromSentence(input_lang, sentence)
         input_length = input_tensor.size()[0]
-        encoder_hidden = encoder.initHidden()
-        encoder_outputs = torch.zeros(max_length, encoder.hidden_size, device=device)
+        encoder_hidden = encoder1.initHidden()
+        encoder_outputs = torch.zeros(max_length, encoder1.hidden_size, device=device)
 
         for ei in range(input_length):
             encoder_output, encoder_hidden = encoder(input_tensor[ei],
