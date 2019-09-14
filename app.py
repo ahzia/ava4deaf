@@ -1,5 +1,8 @@
 from __future__ import unicode_literals, print_function, division
 #import numpy as np
+from trainig import AttnDecoderRNN
+from trainig import DecoderRNN
+from trainig import EncoderRNN
 from flask import Flask, request, jsonify, render_template
 import pickle
 from io import open
@@ -12,6 +15,7 @@ import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
 import pickle 
+
 
 class CustomUnpickler(pickle.Unpickler):
 
