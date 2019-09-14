@@ -16,7 +16,6 @@ from torch import optim
 import torch.nn.functional as F
 import pickle 
 
-
 class CustomUnpickler(pickle.Unpickler):
 
     def find_class(self, module, name):
@@ -127,10 +126,10 @@ class EncoderRNN(nn.Module):
 
 
 # Loading the modeles
-decoder = CustomUnpickler(open('attn_decoder1', 'rb')).load()
+decoder = CustomUnpickler(open('attn_decoder1.pkl', 'rb')).load()
 
 #encoder = CustomUnpickler(open('encoder1', 'rb')).load()
-encoder = torch.load('encoder1',CustomUnpickler) 
+decoder = CustomUnpickler(open('encoder1.pkl', 'rb')).load()
 #decoder=torch.load("attn_decoder1")
 #encoder=torch.load("encoder1")
 
@@ -297,7 +296,4 @@ def td():
     return render_template('2d.html')   
 
 if __name__ == "__main__":
-    from trainig import AttnDecoderRNN
-    from trainig import DecoderRNN
-    from trainig import EncoderRNN
     app.run(debug=True)
