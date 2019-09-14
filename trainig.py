@@ -794,6 +794,10 @@ def evaluateAndShowAttention(input_sentence):
     print('output =', ' '.join(output_words))
     showAttention(input_sentence, output_words, attentions)
 
+def evaluateASA(input_sentence,encoder,decoder):
+    output_words, attentions = evaluate(encoder, decoder, input_sentence)
+    return(' '.join(output_words))
+
 
 #evaluateAndShowAttention("up")
 
