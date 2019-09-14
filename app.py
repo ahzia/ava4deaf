@@ -87,7 +87,6 @@ class EncoderRNN(nn.Module):
     def initHidden(self):
         return torch.zeros(1, 1, self.hidden_size, device=device)
 
-
 class AttnDecoderRNN(nn.Module):
     def __init__(self, hidden_size, output_size, dropout_p=0.1, max_length=MAX_LENGTH):
         super(AttnDecoderRNN, self).__init__()
@@ -123,17 +122,6 @@ class AttnDecoderRNN(nn.Module):
 
     def initHidden(self):
         return torch.zeros(1, 1, self.hidden_size, device=device)
-input_lang, output_lang, pairs = trainig.prepareData('eng', 'SignLanguage', True)
-hidden_size = 256
-encoder1 = EncoderRNN(input_lang.n_words, hidden_size).to(device)
-decoder1 = AttnDecoderRNN(hidden_size, output_lang.n_words, dropout_p=0.1).to(device)
-# Loading the modeles
-decoder = CustomUnpickler(open('attn_decoder1', 'rb')).load()
-
-#encoder = CustomUnpickler(open('encoder1', 'rb')).load()
-encoder = CustomUnpickler(open('encoder1', 'rb')).load()
-#decoder=torch.load("attn_decoder1")
-#encoder=torch.load("encoder1")
 
 #methods for preprocessing the input:
 SOS_token = 0
@@ -261,8 +249,20 @@ def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
 
         return decoded_words, decoder_attentions[:di + 1]
 
+input_lang, output_lang, pairs = trainig.prepareData('eng', 'SignLanguage', True)
+hidden_size = 256
+encoder1 = EncoderRNN(input_lang.n_words, hidden_size).to(device)
+decoder1 = AttnDecoderRNN(hidden_size, output_lang.n_words, dropout_p=0.1).to(device)
+# Loading the modeles
+decoder2 = CustomUnpickler(open('attn_decoder1', 'rb')).load()
+
+#encoder = CustomUnpickler(open('encoder1', 'rb')).load()
+encoder2 = CustomUnpickler(open('encoder1', 'rb')).load()
+#decoder=torch.load("attn_decoder1")
+#encoder=torch.load("encoder1")
+
 def evaluateASA(input_sentence):
-    output_words, attentions = evaluate(encoder, decoder, input_sentence)
+    output_words, attentions = evaluate(encoder2, decoder2, input_sentence)
     return(' '.join(output_words))
 
 
@@ -277,7 +277,7 @@ def predict():
     features = [str(x) for x in request.form.values()]
     final_features = features[0]
     #try
-    output=evaluateASA(final_features)
+    output=trainig.evaluateASA(final_features)
     #catch the errorword,remove and call evaluate for 2 other parts then join : part one+removed+ part tow 
     return render_template('index.html', prediction_text='{}'.format(output))
     
