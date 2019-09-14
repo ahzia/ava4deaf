@@ -124,12 +124,12 @@ class EncoderRNN(nn.Module):
 #     def initHidden(self):
 #         return torch.zeros(1, 1, self.hidden_size, device=device)
 
-
+encoder=EncoderRNN
 # Loading the modeles
-decoder = CustomUnpickler(open('attn_decoder1.pkl', 'rb')).load()
+decoder = CustomUnpickler(open('attn_decoder1', 'rb')).load()
 
 #encoder = CustomUnpickler(open('encoder1', 'rb')).load()
-encoder = CustomUnpickler(open('encoder1.pkl', 'rb')).load()
+encoder = CustomUnpickler(open('encoder1', 'rb')).load()
 #decoder=torch.load("attn_decoder1")
 #encoder=torch.load("encoder1")
 
