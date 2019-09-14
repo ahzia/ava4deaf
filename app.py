@@ -121,9 +121,9 @@ class EncoderRNN(nn.Module):
 
 
 # Loading the modeles
-decoder = CustomUnpickler(open('attn_decoder1', 'rb')).load()
+decoder1 = CustomUnpickler(open('attn_decoder1', 'rb')).load()
 
-encoder = CustomUnpickler(open('encoder1', 'rb')).load()
+encoder1 = CustomUnpickler(open('encoder1', 'rb')).load()
 #decoder=torch.load("attn_decoder1")
 #encoder=torch.load("encoder1")
 
@@ -255,7 +255,7 @@ def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
         return decoded_words, decoder_attentions[:di + 1]
 
 def evaluateASA(input_sentence):
-    output_words, attentions = evaluate(encoder.module, decoder, input_sentence)
+    output_words, attentions = evaluate(encoder1, decoder1, input_sentence)
     return(' '.join(output_words))
 
 
