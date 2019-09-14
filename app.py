@@ -12,7 +12,7 @@ import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
 import pickle
-class CustomUnpickler(pickle.Unpickler):
+class CustomUnpickler(torch.Unpickler):
 
     def find_class(self, module, name):
         if name == 'AttnDecoderRNN':
@@ -122,7 +122,6 @@ class EncoderRNN(nn.Module):
 
 
 # Loading the modeles
-encoder=EncoderRNN()
 decoder = CustomUnpickler(open('attn_decoder1', 'rb')).load()
 
 encoder = CustomUnpickler(open('encoder1', 'rb')).load()
