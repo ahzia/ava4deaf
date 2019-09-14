@@ -79,11 +79,10 @@ class EncoderRNN(nn.Module):
         output, hidden = self.gru(output, hidden)
         return output, hidden
     #new code
-    def __getattr__(self, name):
-        try:
-            return super().__getattr__(name)
-        except AttributeError:
-            return getattr(self.model.module, name)
+    if isinstance(model, DataParallel):
+        self.model_attr_accessor = model.module
+    else:
+        self.model_attr_accessor = model
     #end new code
     def initHidden(self):
         return torch.zeros(1, 1, self.hidden_size, device=device)
