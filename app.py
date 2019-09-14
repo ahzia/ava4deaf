@@ -78,7 +78,13 @@ class EncoderRNN(nn.Module):
         output = embedded
         output, hidden = self.gru(output, hidden)
         return output, hidden
-
+    #new code
+    def __getattr__(self, name):
+        try:
+            return super().__getattr__(name)
+        except AttributeError:
+            return getattr(self.model.module, name)
+    #end new code
     def initHidden(self):
         return torch.zeros(1, 1, self.hidden_size, device=device)
 
@@ -255,7 +261,7 @@ def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
         return decoded_words, decoder_attentions[:di + 1]
 
 def evaluateASA(input_sentence):
-    output_words, attentions = evaluate(encoder.Module, decoder, input_sentence)
+    output_words, attentions = evaluate(encoder, decoder, input_sentence)
     return(' '.join(output_words))
 
 
