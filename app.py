@@ -11,7 +11,20 @@ import torch
 import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
+from trainig import AttnDecoderRNN
+from trainig import EncoderRNN
 from trainig import Lang
+import pickle
+class CustomUnpickler(pickle.Unpickler):
+
+    def find_class(self, module, name):
+        if name == 'AttnDecoderRNN':
+            from trainig import AttnDecoderRNN
+            return AttnDecoderRNN
+        if name == 'EncoderRNN':
+            from trainig import EncoderRNN
+            return EncoderRNN
+        return super().find_class(module, name)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -108,9 +121,11 @@ MAX_LENGTH = 10
 
 
 # Loading the modeles
+decoder = CustomUnpickler(open('attn_decoder1', 'rb')).load()
 
-decoder=torch.load("attn_decoder1")
-encoder=torch.load("encoder1")
+encoder = CustomUnpickler(open('encoder1', 'rb')).load()
+#decoder=torch.load("attn_decoder1")
+#encoder=torch.load("encoder1")
 
 #methods for preprocessing the input:
 SOS_token = 0
@@ -274,7 +289,6 @@ def predict_api():
 def td():
     page = request.args.get('2d', default = "", type = str)
     return render_template('2d.html')   
-from trainig import AttnDecoderRNN
-from trainig import EncoderRNN
+
 if __name__ == "__main__":
     app.run(debug=True)
