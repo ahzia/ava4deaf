@@ -124,7 +124,7 @@ class EncoderRNN(nn.Module):
 # Loading the modeles
 decoder = CustomUnpickler(open('attn_decoder1', 'rb')).load()
 
-encoder = CustomUnpickler(open('encoder1', 'rb')).load()
+#encoder = CustomUnpickler(open('encoder1', 'rb')).load()
 
 encoder = torch.load('encoder1',pickle_module=<CustomUnpickler(open('encoder1', 'rb')>) 
 #decoder=torch.load("attn_decoder1")
