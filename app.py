@@ -277,7 +277,7 @@ def predict():
     features = [str(x) for x in request.form.values()]
     final_features = features[0]
     #try
-    output=trainig.evaluateASA(final_features,encoder2,decoer2)
+    output=trainig.evaluateASA(final_features,encoder2,decoder2)
     #catch the errorword,remove and call evaluate for 2 other parts then join : part one+removed+ part tow 
     return render_template('index.html', prediction_text='{}'.format(output))
     
