@@ -2,6 +2,12 @@
 # coding: utf-8
 
 # In[ ]:
+
+
+get_ipython().run_line_magic('matplotlib', 'inline')
+import pickle
+
+
 # 
 # Translation with a Sequence to Sequence Network and Attention
 # *************************************************************
@@ -28,9 +34,6 @@
 
 
 from __future__ import unicode_literals, print_function, division
-
-import pickle
-
 from io import open
 import unicodedata
 import string
@@ -209,21 +212,21 @@ def filterPairs(pairs):
 
 def prepareData(lang1, lang2, reverse=True):
     input_lang, output_lang, pairs = readLangs(lang1, lang2, reverse)
-    #print("Read %s sentence pairs" % len(pairs))
+    print("Read %s sentence pairs" % len(pairs))
     #pairs = filterPairs(pairs)
-    #print("Trimmed to %s sentence pairs" % len(pairs))
-    #print("Counting words...")
+    print("Trimmed to %s sentence pairs" % len(pairs))
+    print("Counting words...")
     for pair in pairs:
         input_lang.addSentence(pair[0])
         output_lang.addSentence(pair[1])
-    #print("Counted words:")
-    #print(input_lang.name, input_lang.n_words)
-    #print(output_lang.name, output_lang.n_words)
+    print("Counted words:")
+    print(input_lang.name, input_lang.n_words)
+    print(output_lang.name, output_lang.n_words)
     return input_lang, output_lang, pairs
 
 
 input_lang, output_lang, pairs = prepareData('eng', 'SignLanguage', True)
-#print(random.choice(pairs))
+print(random.choice(pairs))
 
 
 # The Seq2Seq Model
@@ -274,7 +277,7 @@ class EncoderRNN(nn.Module):
 
     def initHidden(self):
         return torch.zeros(1, 1, self.hidden_size, device=device)
-#print(random.choice(pairs))
+print(random.choice(pairs))
 
 
 # The Decoder
@@ -321,7 +324,7 @@ class DecoderRNN(nn.Module):
 
     def initHidden(self):
         return torch.zeros(1, 1, self.hidden_size, device=device)
-#print(random.choice(pairs))
+print(random.choice(pairs))
 
 
 # to save space we'll be going straight for the gold and introducing the
@@ -386,7 +389,7 @@ class AttnDecoderRNN(nn.Module):
 
     def initHidden(self):
         return torch.zeros(1, 1, self.hidden_size, device=device)
-#print(random.choice(pairs))
+print(random.choice(pairs))
 
 
 # <div class="alert alert-info"><h4>Note</h4><p>There are other forms of attention that work around the length
@@ -425,7 +428,7 @@ def tensorsFromPair(pair):
     input_tensor = tensorFromSentence(input_lang, pair[0])
     target_tensor = tensorFromSentence(output_lang, pair[1])
     return (input_tensor, target_tensor)
-#print(random.choice(pairs))
+print(random.choice(pairs))
 
 
 # Training the Model
@@ -512,7 +515,7 @@ def train(input_tensor, target_tensor, encoder, decoder, encoder_optimizer, deco
     decoder_optimizer.step()
 
     return loss.item() / target_length
-#print(random.choice(pairs))
+print(random.choice(pairs))
 
 
 # This is a helper function to print time elapsed and estimated time
@@ -540,7 +543,7 @@ def timeSince(since, percent):
     es = s / (percent)
     rs = es - s
     return '%s (- %s)' % (asMinutes(s), asMinutes(rs))
-#print(random.choice(pairs))
+print(random.choice(pairs))
 
 
 # The whole training process looks like this:
@@ -593,7 +596,7 @@ def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, lear
             plot_loss_total = 0
 
     showPlot(plot_losses)
-#print(random.choice(pairs))
+print(random.choice(pairs))
 
 
 # Plotting results
@@ -621,7 +624,7 @@ def showPlot(points):
     loc = ticker.MultipleLocator(base=0.2)
     ax.yaxis.set_major_locator(loc)
     plt.plot(points)
-#print(random.choice(pairs))
+print(random.choice(pairs))
 
 
 # Evaluation
@@ -675,7 +678,7 @@ def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
             decoder_input = topi.squeeze().detach()
 
         return decoded_words, decoder_attentions[:di + 1]
-#print(random.choice(pairs))
+print(random.choice(pairs))
 
 
 # We can evaluate random sentences from the training set and print out the
@@ -696,7 +699,7 @@ def evaluateRandomly(encoder, decoder, n=10):
         output_sentence = ' '.join(output_words)
         print('<', output_sentence)
         print('')
-#print(random.choice(pairs))
+print(random.choice(pairs))
 
 
 # Training and Evaluating
@@ -726,14 +729,14 @@ hidden_size = 256
 encoder1 = EncoderRNN(input_lang.n_words, hidden_size).to(device)
 attn_decoder1 = AttnDecoderRNN(hidden_size, output_lang.n_words, dropout_p=0.1).to(device)
 
-#trainIters(encoder1, attn_decoder1, 75000, print_every=5000)
-#print(random.choice(pairs))
+trainIters(encoder1, attn_decoder1, 75000, print_every=5000)
+print(random.choice(pairs))
 
 
 # In[53]:
 
 
-#evaluateRandomly(encoder1, attn_decoder1)
+evaluateRandomly(encoder1, attn_decoder1)
 
 
 # Visualizing Attention
@@ -794,18 +797,14 @@ def evaluateAndShowAttention(input_sentence):
     print('output =', ' '.join(output_words))
     showAttention(input_sentence, output_words, attentions)
 
-def evaluateASA(input_sentence,encoder,decoder):
-    output_words, attentions = evaluate(encoder, decoder, input_sentence)
-    return(' '.join(output_words))
 
+evaluateAndShowAttention("up")
 
-#evaluateAndShowAttention("up")
+evaluateAndShowAttention("¿debate")
 
-#evaluateAndShowAttention("¿debate")
+evaluateAndShowAttention("¿sore")
 
-#evaluateAndShowAttention("¿sore")
-
-#evaluateAndShowAttention("¿wheel")
+evaluateAndShowAttention("¿wheel")
 
 
 # #saving the encoder and decoder Model
@@ -813,8 +812,9 @@ def evaluateASA(input_sentence,encoder,decoder):
 # In[56]:
 
 
-#torch.save(encoder1,"encoder1")
-#torch.save(attn_decoder1,"decoder")
+torch.save(encoder1,"encoder1")
+torch.save(attn_decoder1,"decoder")
+
 
 # 
 # 

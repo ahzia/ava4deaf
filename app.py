@@ -1,7 +1,5 @@
 from __future__ import unicode_literals, print_function, division
-from trainig import AttnDecoderRNN
-from trainig import DecoderRNN
-from trainig import EncoderRNN
+import numpy as np
 from flask import Flask, request, jsonify, render_template
 import pickle
 from io import open
@@ -13,21 +11,14 @@ import torch
 import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
-import pickle 
-import trainig
+import pickle
 
 class CustomUnpickler(pickle.Unpickler):
 
     def find_class(self, module, name):
-        if name == 'AttnDecoderRNN':
-            from trainig import AttnDecoderRNN
-            return AttnDecoderRNN
-        if name == 'EncoderRNN':
-            from trainig import EncoderRNN
-            return EncoderRNN
-        if name == 'DecoderRNN':
-            from trainig import DecoderRNN
-            return DecoderRNN
+        if name == 'Manager':
+            from settings import Manager
+            return Manager
         return super().find_class(module, name)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -82,10 +73,10 @@ class EncoderRNN(nn.Module):
         output = embedded
         output, hidden = self.gru(output, hidden)
         return output, hidden
-    #new code
-    #end new code
+
     def initHidden(self):
         return torch.zeros(1, 1, self.hidden_size, device=device)
+
 
 class AttnDecoderRNN(nn.Module):
     def __init__(self, hidden_size, output_size, dropout_p=0.1, max_length=MAX_LENGTH):
@@ -123,6 +114,12 @@ class AttnDecoderRNN(nn.Module):
     def initHidden(self):
         return torch.zeros(1, 1, self.hidden_size, device=device)
 
+
+# Loading the modeles
+
+decoder=torch.load("attn_decoder1")
+encoder=torch.load("encoder1")
+
 #methods for preprocessing the input:
 SOS_token = 0
 EOS_token = 1
@@ -154,7 +151,7 @@ def unicodeToAscii(s):
         if unicodedata.category(c) != 'Mn'
     )
 
-#Lowercase, trim, and remove non-letter characters
+# Lowercase, trim, and remove non-letter characters
 def normalizeString(s):
     s = unicodeToAscii(s)   
     return s
@@ -219,8 +216,9 @@ def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
     with torch.no_grad():
         input_tensor = tensorFromSentence(input_lang, sentence)
         input_length = input_tensor.size()[0]
-        encoder_hidden = encoder1.initHidden()
-        encoder_outputs = torch.zeros(max_length, encoder1.hidden_size, device=device)
+        encoder_hidden = encoder.initHidden()
+
+        encoder_outputs = torch.zeros(max_length, encoder.hidden_size, device=device)
 
         for ei in range(input_length):
             encoder_output, encoder_hidden = encoder(input_tensor[ei],
@@ -249,20 +247,8 @@ def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
 
         return decoded_words, decoder_attentions[:di + 1]
 
-input_lang, output_lang, pairs = trainig.prepareData('eng', 'SignLanguage', True)
-hidden_size = 256
-encoder1 = EncoderRNN(input_lang.n_words, hidden_size).to(device)
-decoder1 = AttnDecoderRNN(hidden_size, output_lang.n_words, dropout_p=0.1).to(device)
-# Loading the modeles
-decoder2 = CustomUnpickler(open('attn_decoder1', 'rb')).load()
-
-#encoder = CustomUnpickler(open('encoder1', 'rb')).load()
-encoder2 = CustomUnpickler(open('encoder1', 'rb')).load()
-#decoder=torch.load("attn_decoder1")
-#encoder=torch.load("encoder1")
-
 def evaluateASA(input_sentence):
-    output_words, attentions = evaluate(encoder2, decoder2, input_sentence)
+    output_words, attentions = evaluate(encoder, decoder, input_sentence)
     return(' '.join(output_words))
 
 
@@ -277,7 +263,7 @@ def predict():
     features = [str(x) for x in request.form.values()]
     final_features = features[0]
     #try
-    output=trainig.evaluateASA(final_features,encoder2,decoder2)
+    output=evaluateASA(final_features)
     #catch the errorword,remove and call evaluate for 2 other parts then join : part one+removed+ part tow 
     return render_template('index.html', prediction_text='{}'.format(output))
     
