@@ -7,4 +7,4 @@ Pillow
 matplotlib
 https://download.pytorch.org/whl/cpu/torch-1.0.0-cp37-cp37m-linux_x86_64.whl
 torchvision==0.2.1
-https://github.com/ahzia/ava4deaf/setup
+pip install -e git+ssh://git@github.com/ahzia/ava4deaf.git
