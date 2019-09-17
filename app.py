@@ -1,4 +1,7 @@
 from __future__ import unicode_literals, print_function, division
+import sys
+sys.path.append('/home/site/wwwroot')
+from trainig import *
 import numpy as np
 from flask import Flask, request, jsonify, render_template
 import pickle
@@ -12,15 +15,13 @@ import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
 import pickle
+# class CustomUnpickler(pickle.Unpickler):
 
-class CustomUnpickler(pickle.Unpickler):
-
-    def find_class(self, module, name):
-        if name == 'Manager':
-            from settings import Manager
-            return Manager
-        return super().find_class(module, name)
-
+#     def find_class(self, module, name):
+#         if name == 'Manager':
+#             from settings import Manager
+#             return Manager
+#         return super().find_class(module, name)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 app = Flask(__name__)
@@ -40,85 +41,98 @@ MAX_LENGTH = 10
 
 #the Decoder and encoder classes
 
-class DecoderRNN(nn.Module):
-    def __init__(self, hidden_size, output_size):
-        super(DecoderRNN, self).__init__()
-        self.hidden_size = hidden_size
+# class DecoderRNN(nn.Module):
+#     def __init__(self, hidden_size, output_size):
+#         super(DecoderRNN, self).__init__()
+#         self.hidden_size = hidden_size
 
-        self.embedding = nn.Embedding(output_size, hidden_size)
-        self.gru = nn.GRU(hidden_size, hidden_size)
-        self.out = nn.Linear(hidden_size, output_size)
-        self.softmax = nn.LogSoftmax(dim=1)
+#         self.embedding = nn.Embedding(output_size, hidden_size)
+#         self.gru = nn.GRU(hidden_size, hidden_size)
+#         self.out = nn.Linear(hidden_size, output_size)
+#         self.softmax = nn.LogSoftmax(dim=1)
 
-    def forward(self, input, hidden):
-        output = self.embedding(input).view(1, 1, -1)
-        output = F.relu(output)
-        output, hidden = self.gru(output, hidden)
-        output = self.softmax(self.out(output[0]))
-        return output, hidden
+#     def forward(self, input, hidden):
+#         output = self.embedding(input).view(1, 1, -1)
+#         output = F.relu(output)
+#         output, hidden = self.gru(output, hidden)
+#         output = self.softmax(self.out(output[0]))
+#         return output, hidden
 
-    def initHidden(self):
-        return torch.zeros(1, 1, self.hidden_size, device=device)
+#     def initHidden(self):
+#         return torch.zeros(1, 1, self.hidden_size, device=device)
+# class EncoderRNN(nn.Module):
+#     def __init__(self, input_size, hidden_size):
+#         super(EncoderRNN, self).__init__()
+#         self.hidden_size = hidden_size
+#         self.embedding = nn.Embedding(input_size, hidden_size)
+#         self.gru = nn.GRU(hidden_size, hidden_size)
 
-class EncoderRNN(nn.Module):
-    def __init__(self, input_size, hidden_size):
-        super(EncoderRNN, self).__init__()
-        self.hidden_size = hidden_size
+#     def forward(self, input, hidden):
+#         embedded = self.embedding(input).view(1, 1, -1)
+#         output = embedded
+#         output, hidden = self.gru(output, hidden)
+#         return output, hidden
 
-        self.embedding = nn.Embedding(input_size, hidden_size)
-        self.gru = nn.GRU(hidden_size, hidden_size)
-
-    def forward(self, input, hidden):
-        embedded = self.embedding(input).view(1, 1, -1)
-        output = embedded
-        output, hidden = self.gru(output, hidden)
-        return output, hidden
-
-    def initHidden(self):
-        return torch.zeros(1, 1, self.hidden_size, device=device)
+#     def initHidden(self):
+#         return torch.zeros(1, 1, self.hidden_size, device=device)
 
 
-class AttnDecoderRNN(nn.Module):
-    def __init__(self, hidden_size, output_size, dropout_p=0.1, max_length=MAX_LENGTH):
-        super(AttnDecoderRNN, self).__init__()
-        self.hidden_size = hidden_size
-        self.output_size = output_size
-        self.dropout_p = dropout_p
-        self.max_length = max_length
+# class AttnDecoderRNN(nn.Module):
+#     def __init__(self, hidden_size, output_size, dropout_p=0.1, max_length=MAX_LENGTH):
+#         super(AttnDecoderRNN, self).__init__()
+#         self.hidden_size = hidden_size
+#         self.output_size = output_size
+#         self.dropout_p = dropout_p
+#         self.max_length = max_length
 
-        self.embedding = nn.Embedding(self.output_size, self.hidden_size)
-        self.attn = nn.Linear(self.hidden_size * 2, self.max_length)
-        self.attn_combine = nn.Linear(self.hidden_size * 2, self.hidden_size)
-        self.dropout = nn.Dropout(self.dropout_p)
-        self.gru = nn.GRU(self.hidden_size, self.hidden_size)
-        self.out = nn.Linear(self.hidden_size, self.output_size)
+#         self.embedding = nn.Embedding(self.output_size, self.hidden_size)
+#         self.attn = nn.Linear(self.hidden_size * 2, self.max_length)
+#         self.attn_combine = nn.Linear(self.hidden_size * 2, self.hidden_size)
+#         self.dropout = nn.Dropout(self.dropout_p)
+#         self.gru = nn.GRU(self.hidden_size, self.hidden_size)
+#         self.out = nn.Linear(self.hidden_size, self.output_size)
 
-    def forward(self, input, hidden, encoder_outputs):
-        embedded = self.embedding(input).view(1, 1, -1)
-        embedded = self.dropout(embedded)
+#     def forward(self, input, hidden, encoder_outputs):
+#         embedded = self.embedding(input).view(1, 1, -1)
+#         embedded = self.dropout(embedded)
 
-        attn_weights = F.softmax(
-            self.attn(torch.cat((embedded[0], hidden[0]), 1)), dim=1)
-        attn_applied = torch.bmm(attn_weights.unsqueeze(0),
-                                 encoder_outputs.unsqueeze(0))
+#         attn_weights = F.softmax(
+#             self.attn(torch.cat((embedded[0], hidden[0]), 1)), dim=1)
+#         attn_applied = torch.bmm(attn_weights.unsqueeze(0),
+#                                  encoder_outputs.unsqueeze(0))
 
-        output = torch.cat((embedded[0], attn_applied[0]), 1)
-        output = self.attn_combine(output).unsqueeze(0)
+#         output = torch.cat((embedded[0], attn_applied[0]), 1)
+#         output = self.attn_combine(output).unsqueeze(0)
 
-        output = F.relu(output)
-        output, hidden = self.gru(output, hidden)
+#         output = F.relu(output)
+#         output, hidden = self.gru(output, hidden)
 
-        output = F.log_softmax(self.out(output[0]), dim=1)
-        return output, hidden, attn_weights
+#         output = F.log_softmax(self.out(output[0]), dim=1)
+#         return output, hidden, attn_weights
 
-    def initHidden(self):
-        return torch.zeros(1, 1, self.hidden_size, device=device)
+#     def initHidden(self):
+#         return torch.zeros(1, 1, self.hidden_size, device=device)
+# class EncoderRNN(nn.Module):
+#     def __init__(self, input_size, hidden_size):
+#         super(EncoderRNN, self).__init__()
+#         self.hidden_size = hidden_size
 
+#         self.embedding = nn.Embedding(input_size, hidden_size)
+#         self.gru = nn.GRU(hidden_size, hidden_size)
 
+#     def forward(self, input, hidden):
+#         embedded = self.embedding(input).view(1, 1, -1)
+#         output = embedded
+#         output, hidden = self.gru(output, hidden)
+#         return output, hidden
+
+#     def initHidden(self):
+#         return torch.zeros(1, 1, self.hidden_size, device=device)
 # Loading the modeles
-
-decoder=torch.load("attn_decoder1")
-encoder=torch.load("encoder1")
+decoder=torch.load('attn_decoder1')
+#decoder=torch.load("attn_decoder1")
+encoder=torch.load('encoder1')
+#encoder=torch.load("encoder1")
 
 #methods for preprocessing the input:
 SOS_token = 0
@@ -250,12 +264,120 @@ def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
 def evaluateASA(input_sentence):
     output_words, attentions = evaluate(encoder, decoder, input_sentence)
     return(' '.join(output_words))
-
-
 #end of evaluation code 
 ###############################################
+import logging
+logger = logging.Logger('catch_all')
+def res(f):
+    try:
+        output=evaluateASA(f)
+        return output
+    except Exception as e:
+        error= str(e)
+        sen1=""
+        sen2=""
+        t=True
+        p=f.split()
+        for s in p:
+            if ("'"+s+"'"!=error):
+                if t:
+                    sen1=sen1+s
+                else:
+                    sen2=sen2+s
+            else:
+                #if the word was not in dataset that we used to train model:translate character by character
+                t=False
+                # for char in s:
+                    #  if(s=='A' or  s=='a'):
 
-@app.route('/predict',methods=['POST'])
+                #     }
+                #     if(s=='B' or  s=='b'){
+
+                #     }
+                #     if(s=='C' or  s=='c'){
+
+                #     }
+                #     if(s=='D' or  s=='d'){
+
+                #     }
+                #     if(s=='E' or  s=='e'){
+
+                #     }
+                #     if(s=='F' or  s=='f'){
+
+                #     }
+                #     if(s=='G' or  s=='g'){
+
+                #     }
+                #     if(s=='H' or  s=='h'){
+
+                #     }
+                #     if(s=='I' or  s=='i'){
+
+                #     }
+                #     if(s=='J' or  s=='j'){
+
+                #     }
+                #     if(s=='K' or  s=='k'){
+
+                #     }
+                #     if(s=='L' or  s=='l'){
+
+                #     }
+                #     if(s=='M' or  s=='m'){
+
+                #     }
+                #     if(s=='N' or  s=='n'){
+
+                #     }
+                #     if(s=='O' or  s=='o'){
+
+                #     }
+                #     if(s=='P' or  s=='p'){
+
+                #     }
+                #     if(s=='Q' or  s=='q'){
+
+                #     }
+                #     if(s=='R' or  s=='r'){
+
+                #     }
+                #     if(s=='S' or  s=='s'){
+
+                #     }
+                #     if(s=='T' or  s=='t'){
+
+                #     }
+                #     if(s=='U' or  s=='u'){
+
+                #     }
+                #     if(s=='V' or  s=='v'){
+
+                #     }
+                #     if(s=='W' or  s=='w'){
+
+                #     }
+                #     if(s=='X' or  s=='x'){
+
+                #     }
+                #     if(s=='Y' or  s=='y'){
+
+                #     }
+                    
+                #     if(s=='Z' or  s=='z'){
+
+                #     }
+                #     if(s=='.' ){
+
+                #     }
+                #     if(s==',' ){
+
+                #     }
+                
+                #handle
+        output=res(sen1)+res(sen2)
+        return output
+@app.route('/predict',methods=['POST']) 
 def predict():
     '''
     For rendering results on HTML GUI
@@ -263,7 +385,10 @@ def predict():
     features = [str(x) for x in request.form.values()]
     final_features = features[0]
     #try
-    output=evaluateASA(final_features)
+    output=res(final_features)
+    #output=evaluateASA(final_features)
+    output=output.replace("<EOS>","")
+    output=output.replace(" ","")
     #catch the errorword,remove and call evaluate for 2 other parts then join : part one+removed+ part tow 
     return render_template('index.html', prediction_text='{}'.format(output))
     
@@ -284,4 +409,4 @@ def td():
     return render_template('2d.html')   
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='127.0.0.1',debug=True)

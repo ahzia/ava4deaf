@@ -7,7 +7,7 @@
   <meta id="idviewport" name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>SignWriting in Unicode (SWU) Viewer</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style - Copy.css') }}">
     <style>
 html {
   box-sizing: border-box;
@@ -128,7 +128,6 @@ div.sign:hover svg g text {
 div.signtext.midnight div.sign:hover svg g text {
   fill: yellow !important;
 }
-
     </style>
   </head>
   <body onload="load()"> 
@@ -137,7 +136,8 @@ div.signtext.midnight div.sign:hover svg g text {
   <form action="2D.html" id="form" method="GET">
   <input type="button" class="form-button btn btn-primary btn-block btn-large" id="style2"  onclick="css2Change();" value="Style" />
   <input type="button" class="form-button btn btn-primary btn-block btn-large" id="animate2"  onclick="document.getElementById('style2').scrollIntoView(); swuAnimate();" value="Animate" />
-  <input type="button" class="form-button btn btn-primary btn-block btn-large" id="back"  onclick="location.href='';" value="Try another sentence" />
+  <input type="button" class="form-button btn btn-primary btn-block btn-large" id="back" value="Try another sentence" />
+  <button></button>
   <textarea hidden class="ssw-one-d" id="swu" name="text" placeholder="enter SignWriting in Unicode" oninput="swuChange();"></textarea> 
   </form>
 <div id="signtext2" class="signtext"></div>
@@ -168,6 +168,9 @@ function swuSet(){
   var swu = ssw.fsw2swu(signtext);
   document.getElementById("swu").value = swu;
 }
+document.getElementById('back').addEventListener('click',function(){
+  window.location.href="http://127.0.0.1:5000";
+});
 
 var swuLast;
 function swuChange(){

@@ -4,8 +4,8 @@
 # In[ ]:
 
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-import pickle
+# get_ipython().run_line_magic('matplotlib', 'inline')
+# import pickle
 
 
 # 
@@ -729,14 +729,14 @@ hidden_size = 256
 encoder1 = EncoderRNN(input_lang.n_words, hidden_size).to(device)
 attn_decoder1 = AttnDecoderRNN(hidden_size, output_lang.n_words, dropout_p=0.1).to(device)
 
-trainIters(encoder1, attn_decoder1, 75000, print_every=5000)
-print(random.choice(pairs))
+#trainIters(encoder1, attn_decoder1, 75000, print_every=5000)
+#print(random.choice(pairs))
 
 
 # In[53]:
 
 
-evaluateRandomly(encoder1, attn_decoder1)
+#evaluateRandomly(encoder1, attn_decoder1)
 
 
 # Visualizing Attention
@@ -757,9 +757,9 @@ evaluateRandomly(encoder1, attn_decoder1)
 # In[60]:
 
 
-output_words, attentions = evaluate(
-    encoder1, attn_decoder1, "up")
-plt.matshow(attentions.numpy())
+#output_words, attentions = evaluate(
+#    encoder1, attn_decoder1, "up")
+#plt.matshow(attentions.numpy())
 
 
 # For a better viewing experience we will do the extra work of adding axes
@@ -798,13 +798,13 @@ def evaluateAndShowAttention(input_sentence):
     showAttention(input_sentence, output_words, attentions)
 
 
-evaluateAndShowAttention("up")
+#evaluateAndShowAttention("up")
 
-evaluateAndShowAttention("¿debate")
+#evaluateAndShowAttention("¿debate")
 
-evaluateAndShowAttention("¿sore")
+#evaluateAndShowAttention("¿sore")
 
-evaluateAndShowAttention("¿wheel")
+#evaluateAndShowAttention("¿wheel")
 
 
 # #saving the encoder and decoder Model
@@ -812,8 +812,8 @@ evaluateAndShowAttention("¿wheel")
 # In[56]:
 
 
-torch.save(encoder1,"encoder1")
-torch.save(attn_decoder1,"decoder")
+#torch.save(encoder1,"encoder1")
+#torch.save(attn_decoder1,"decoder")
 
 
 # 
